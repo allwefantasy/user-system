@@ -1,14 +1,18 @@
 package tech.mlsql.app_runtime.plugin.user.action
 
+import java.util.UUID
+
+import tech.mlsql.app_runtime.db.action.BasicActionProxy
 import tech.mlsql.app_runtime.db.quill_model.DictType
 import tech.mlsql.app_runtime.db.service.BasicDBService
 import tech.mlsql.app_runtime.plugin.user.PluginDB.ctx
 import tech.mlsql.app_runtime.plugin.user.PluginDB.ctx._
-import tech.mlsql.app_runtime.plugin.user.SystemConfig
-import tech.mlsql.app_runtime.plugin.user.quill_model.User
+import tech.mlsql.app_runtime.plugin.user.quill_model.{User, UserSessionDB}
+import tech.mlsql.app_runtime.plugin.user.{PluginDB, Session, SystemConfig}
 import tech.mlsql.common.utils.Md5
 import tech.mlsql.common.utils.serder.json.JSONTool
 import tech.mlsql.serviceframework.platform.action.CustomAction
+import tech.mlsql.serviceframework.platform.{PluginItem, PluginType}
 
 
 class UserReg extends CustomAction {
@@ -25,12 +29,69 @@ class UserReg extends CustomAction {
   }
 }
 
-class UserQuery extends CustomAction {
+class UserLogin extends CustomAction {
+
   override def run(params: Map[String, String]): String = {
-    val names = ctx.run(ctx.query[User]).toList.map(f => f.name)
-    JSONTool.toJsonStr(names)
+    val items = (params.get("name"), params.get("password")) match {
+      case (Some(name), Some(password)) =>
+        UserService.login(name, password) match {
+          case Some(_) =>
+            val token = UUID.randomUUID().toString
+            val session = Session(token, Map())
+            UserSessionDB.session.set(name, session)
+            List(session)
+          case None => List[Session]()
+        }
+      case (_, _) => List[Session]()
+    }
+    JSONTool.toJsonStr(items)
   }
 }
+
+class IsLogin extends CustomAction {
+
+  override def run(params: Map[String, String]): String = {
+    println("---------------##xxxx#---------------------")
+    val tokenOpt = params.get("token")
+    val passwordOpt = params.get("password")
+    val name = params("name")
+
+    def tokenMatch(token: String) = {
+      UserSessionDB.session.get(name).headOption match {
+        case Some(item) => if (item.token == token) List(item)
+        else List()
+        case None => List()
+      }
+    }
+
+    val items = (tokenOpt, passwordOpt) match {
+      case (None, Some(_)) =>
+        JSONTool.parseJson[List[Session]](new UserLogin().run(params))
+      case (Some(token), None) =>
+        tokenMatch(token)
+      case (Some(token), Some(password)) =>
+        tokenMatch(token)
+
+    }
+
+    JSONTool.toJsonStr(items)
+  }
+}
+
+class UserQuery extends CustomAction {
+  override def run(params: Map[String, String]): String = {
+    val items = params.get("name") match {
+      case Some(name) => UserService.findUser(name).headOption match {
+        case Some(user) => List(user.copy(password = ""))
+        case None => List()
+      }
+      case None => ctx.run(ctx.query[User]).toList.map(f => f.name)
+    }
+    JSONTool.toJsonStr(items)
+  }
+}
+
+// support redis to cache session
 
 class EnableOrDisableQuery extends CustomAction {
   override def run(params: Map[String, String]): String = {
@@ -42,8 +103,11 @@ class EnableOrDisableQuery extends CustomAction {
 }
 
 
-object UserService {
+object UserSystemActionProxy {
+  lazy val proxy = new BasicActionProxy(PluginDB.plugin_name)
+}
 
+object UserService {
 
   def isEnableReg = {
     BasicDBService.fetch(SystemConfig.REG_KEY.toString, DictType.SYSTEM_CONFIG).headOption match {
@@ -52,8 +116,55 @@ object UserService {
     }
   }
 
+  def login(name: String, password: String) = {
+    ctx.run(users().filter(f => f.name == lift(name) && f.password == lift(Md5.md5Hash(password)))).headOption
+  }
+
   def findUser(name: String) = {
-    ctx.run(ctx.query[User].filter(_.name == lift(name))).headOption
+    ctx.run(users().filter(_.name == lift(name))).headOption
+  }
+
+  def users() = {
+    quote {
+      ctx.query[User]
+    }
   }
 
 }
+
+object UserQuery {
+  def action = "users"
+
+  def plugin = PluginItem(UserQuery.action,
+    classOf[UserQuery].getName, PluginType.action, None)
+}
+
+object UserReg {
+  def action = "userReg"
+
+  def plugin = PluginItem(UserReg.action,
+    classOf[UserReg].getName, PluginType.action, None)
+}
+
+object EnableOrDisableQuery {
+  def action = "controlReg"
+
+  def plugin = PluginItem(EnableOrDisableQuery.action,
+    classOf[EnableOrDisableQuery].getName, PluginType.action, None)
+}
+
+object UserLogin {
+  def action = "userLogin"
+
+  def plugin = PluginItem(UserLogin.action,
+    classOf[UserLogin].getName, PluginType.action, None)
+}
+
+object IsLogin {
+  def action = "isLogin"
+
+  def plugin = PluginItem(IsLogin.action,
+    classOf[IsLogin].getName, PluginType.action, None)
+}
+
+

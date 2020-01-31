@@ -11,3 +11,5 @@ case class Resource(id: Int, var name: Int)
 case class UserResource(id: Int, var userId: Int, var resourceId: Int)
 
 case class RoleResource(id: Int, var roleId: Int, var resourceId: Int)
+
+case class UserSession(id: Int, name: String, session: String)
