@@ -2,13 +2,12 @@ package tech.mlsql.app_runtime.plugin.user.action
 
 import java.util.UUID
 
-import tech.mlsql.app_runtime.db.action.BasicActionProxy
 import tech.mlsql.app_runtime.db.quill_model.DictType
 import tech.mlsql.app_runtime.db.service.BasicDBService
 import tech.mlsql.app_runtime.plugin.user.PluginDB.ctx
 import tech.mlsql.app_runtime.plugin.user.PluginDB.ctx._
 import tech.mlsql.app_runtime.plugin.user.quill_model.{User, UserSessionDB}
-import tech.mlsql.app_runtime.plugin.user.{PluginDB, Session, SystemConfig}
+import tech.mlsql.app_runtime.plugin.user.{Session, SystemConfig}
 import tech.mlsql.common.utils.Md5
 import tech.mlsql.common.utils.serder.json.JSONTool
 import tech.mlsql.serviceframework.platform.action.{ActionContext, CustomAction}
@@ -112,35 +111,6 @@ class EnableOrDisableQuery extends CustomAction {
   }
 }
 
-
-object UserSystemActionProxy {
-  lazy val proxy = new BasicActionProxy(PluginDB.plugin_name)
-}
-
-object UserService {
-
-  def isEnableReg = {
-    BasicDBService.fetch(SystemConfig.REG_KEY.toString, DictType.SYSTEM_CONFIG).headOption match {
-      case Some(item) => item.value == SystemConfig.REG_ENABLE.toString
-      case None => false
-    }
-  }
-
-  def login(name: String, password: String) = {
-    ctx.run(users().filter(f => f.name == lift(name) && f.password == lift(Md5.md5Hash(password)))).headOption
-  }
-
-  def findUser(name: String) = {
-    ctx.run(users().filter(_.name == lift(name))).headOption
-  }
-
-  def users() = {
-    quote {
-      ctx.query[User]
-    }
-  }
-
-}
 
 object UserQuery {
   def action = "users"

@@ -6,7 +6,7 @@ case class Role(id: Int, var name: String)
 
 case class UserRole(id: Int, var userId: Int, var roleId: Int)
 
-case class Resource(id: Int, var name: Int)
+case class Resource(id: Int, var name: String)
 
 case class UserResource(id: Int, var userId: Int, var resourceId: Int)
 

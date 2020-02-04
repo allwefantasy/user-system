@@ -13,7 +13,8 @@ class PluginDesc extends Plugin {
       UserQuery.plugin,
       EnableOrDisableQuery.plugin,
       UserLogin.plugin,
-      IsLogin.plugin
+      IsLogin.plugin,
+      AccessAuth.plugin
     )
   }
 
