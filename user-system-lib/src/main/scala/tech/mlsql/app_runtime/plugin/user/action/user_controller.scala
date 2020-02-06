@@ -19,11 +19,11 @@ class UserReg extends CustomAction {
   override def run(params: Map[String, String]): String = {
     if (!UserService.isEnableReg) return JSONTool.toJsonStr(List(Map("msg" -> "User register is not enabled")))
 
-    UserService.findUser(params("name")) match {
-      case Some(_) => JSONTool.toJsonStr(List(Map("msg" -> s"User ${params("name")} is exits")))
+    UserService.findUser(params(UserService.Config.USER_NAME)) match {
+      case Some(_) => JSONTool.toJsonStr(List(Map("msg" -> s"User ${params(UserService.Config.USER_NAME)} is exits")))
       case None =>
-        ctx.run(ctx.query[User].insert(_.name -> lift(params("name")), _.password -> lift(Md5.md5Hash(params("password")))))
-        JSONTool.toJsonStr(List(Map("msg" -> s"User ${params("name")} is registered")))
+        ctx.run(ctx.query[User].insert(_.name -> lift(params(UserService.Config.USER_NAME)), _.password -> lift(Md5.md5Hash(params("password")))))
+        JSONTool.toJsonStr(List(Map("msg" -> s"User ${params(UserService.Config.USER_NAME)} is registered")))
     }
   }
 }
@@ -31,7 +31,7 @@ class UserReg extends CustomAction {
 class UserLogin extends CustomAction {
 
   override def run(params: Map[String, String]): String = {
-    val items = (params.get("name"), params.get("password")) match {
+    val items = (params.get(UserService.Config.USER_NAME), params.get("password")) match {
       case (Some(name), Some(password)) =>
         UserService.login(name, password) match {
           case Some(_) =>
@@ -50,9 +50,9 @@ class UserLogin extends CustomAction {
 class IsLogin extends CustomAction {
 
   override def run(params: Map[String, String]): String = {
-    val tokenOpt = params.get("token")
+    val tokenOpt = params.get(UserService.Config.LOGIN_TOKEN)
     val passwordOpt = params.get("password")
-    val name = params("name")
+    val name = params(UserService.Config.USER_NAME)
 
     def tokenMatch(token: String) = {
       UserSessionDB.session.get(name).headOption match {
@@ -76,10 +76,9 @@ class IsLogin extends CustomAction {
     JSONTool.toJsonStr(items)
   }
 }
-
 class UserQuery extends CustomAction {
   override def run(params: Map[String, String]): String = {
-    val items = params.get("name") match {
+    val items = params.get(UserService.Config.USER_NAME) match {
       case Some(name) => UserService.findUser(name).headOption match {
         case Some(user) => List(user.copy(password = ""))
         case None => List()

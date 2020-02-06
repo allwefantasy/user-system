@@ -14,7 +14,9 @@ class PluginDesc extends Plugin {
       EnableOrDisableQuery.plugin,
       UserLogin.plugin,
       IsLogin.plugin,
-      AccessAuth.plugin
+      AccessAuth.plugin,
+      CheckAuthAction.plugin,
+      AddResourceToRoleOrUser.plugin
     )
   }
 

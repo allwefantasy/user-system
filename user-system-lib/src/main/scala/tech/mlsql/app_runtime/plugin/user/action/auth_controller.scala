@@ -17,6 +17,6 @@ class AccessAuth extends CustomAction {
 object AccessAuth {
   def action = "accessAuth"
 
-  def plugin = PluginItem(UserReg.action,
-    classOf[UserReg].getName, PluginType.action, None)
+  def plugin = PluginItem(AccessAuth.action,
+    classOf[AccessAuth].getName, PluginType.action, None)
 }

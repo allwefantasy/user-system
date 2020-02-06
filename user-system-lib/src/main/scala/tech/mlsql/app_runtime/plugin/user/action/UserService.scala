@@ -7,25 +7,75 @@ import tech.mlsql.app_runtime.plugin.user.PluginDB.ctx._
 import tech.mlsql.app_runtime.plugin.user.SystemConfig
 import tech.mlsql.app_runtime.plugin.user.quill_model._
 import tech.mlsql.common.utils.Md5
+import tech.mlsql.common.utils.serder.json.JSONTool
+import tech.mlsql.serviceframework.platform.action.RenderFunctions
 
 
-object UserService {
+object UserService extends RenderFunctions {
+
+  object Config {
+    val LOGIN_TOKEN = "access-token"
+    val USER_NAME = "userName"
+    val RESOURCE_KEY = "resourceKey"
+  }
+
+
+  def isLogin(userName: String, token: String) = {
+    val isLoginStr = new IsLogin().run(Map(
+      UserService.Config.USER_NAME -> userName,
+      UserService.Config.LOGIN_TOKEN -> token
+    ))
+    JSONTool.parseJson[List[tech.mlsql.app_runtime.plugin.user.Session]](isLoginStr)
+  }
+
+  def checkLoginAndResourceAccess(resourceKey: String, params: Map[String, String]): CanAccess = {
+    var canAccess = false
+
+    val token = params.getOrElse("admin_token", "")
+    if (BasicDBService.adminToken == token) return CanAccess(true, "")
+
+    if (BasicDBService.isDBSupport) {
+      val userName = params(UserService.Config.USER_NAME)
+      val token = params(UserService.Config.LOGIN_TOKEN)
+      if (isLogin(userName, token).isEmpty) {
+        return CanAccess(false, "login ise required")
+      }
+
+      val resourceName = resourceKey
+      val resStr = UserSystemActionProxy.proxy.run(AccessAuth.action,
+        Map(
+          "userName" -> userName,
+          "resourceName" -> resourceName
+        )
+      )
+      val res = JSONTool.parseJson[CanAccess](resStr)
+      canAccess = res.access
+    }
+    if (canAccess) CanAccess(canAccess, "")
+    else CanAccess(canAccess, "No right to access this resource")
+
+  }
+
 
   def accessAuth(userName: String, resourceName: String): CanAccess = {
     // check the people resource
     val userId = findUser(userName).head.id
-    val resourceId = ctx.run(ctx.query[Resource].filter(_.name == lift(resourceName))).head.id
+    val resourceOpt = ctx.run(ctx.query[Resource].filter(_.name == lift(resourceName))).headOption
+
+    if (resourceOpt.isEmpty) return CanAccess(false, s"${resourceName} is not exists")
+    val resourceId = resourceOpt.get.id
+
     val canAccess = ctx.run(ctx.query[UserResource].
       filter(f => f.userId == lift(userId) && f.resourceId == lift(resourceId))).
       headOption.isDefined
-    if (canAccess) return CanAccess(true)
+    if (canAccess) return CanAccess(true, "")
 
     // check the role the people belongs
     val roles = ctx.run(ctx.query[UserRole].filter { ur =>
       ur.userId == lift(userId)
     }).toList
 
-    if (roles.size == 0) return CanAccess(false)
+    if (roles.size == 0) return CanAccess(false, "")
 
     var roleCanAccess = false
 
@@ -41,7 +91,7 @@ object UserService {
       }
 
     }
-    return CanAccess(roleCanAccess)
+    return CanAccess(roleCanAccess, "")
   }
 
   def isEnableReg = {
@@ -52,7 +102,9 @@ object UserService {
   }
 
   def login(name: String, password: String) = {
-    ctx.run(users().filter(f => f.name == lift(name) && f.password == lift(Md5.md5Hash(password)))).headOption
+    ctx.run(users().
+      filter(f => f.name == lift(name) && f.password == lift(Md5.md5Hash(password)))).
+      headOption
   }
 
   def findUser(name: String) = {
@@ -67,4 +119,4 @@ object UserService {
 
 }
 
-case class CanAccess(access: Boolean)
+case class CanAccess(access: Boolean, msg: String)
