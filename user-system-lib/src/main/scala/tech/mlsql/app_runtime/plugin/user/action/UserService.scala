@@ -21,7 +21,7 @@ object UserService extends RenderFunctions {
 
 
   def isLogin(userName: String, token: String) = {
-    val isLoginStr = new IsLogin().run(Map(
+    val isLoginStr = new IsLoginAction().run(Map(
       UserService.Config.USER_NAME -> userName,
       UserService.Config.LOGIN_TOKEN -> token
     ))
@@ -35,8 +35,8 @@ object UserService extends RenderFunctions {
     if (BasicDBService.adminToken == token) return CanAccess(true, "")
 
     if (BasicDBService.isDBSupport) {
-      val userName = params(UserService.Config.USER_NAME)
-      val token = params(UserService.Config.LOGIN_TOKEN)
+      val userName = params.getOrElse(UserService.Config.USER_NAME, "")
+      val token = params.getOrElse(UserService.Config.LOGIN_TOKEN, "")
       if (isLogin(userName, token).isEmpty) {
         return CanAccess(false, "login ise required")
       }

@@ -9,11 +9,11 @@ import tech.mlsql.serviceframework.platform.{PluginItem, _}
 class PluginDesc extends Plugin {
   override def entries: List[PluginItem] = {
     List(
-      UserReg.plugin,
+      UserLoginAction.plugin,
       UserQuery.plugin,
-      EnableOrDisableQuery.plugin,
-      UserLogin.plugin,
-      IsLogin.plugin,
+      EnableOrDisableRegAction.plugin,
+      UserRegAction.plugin,
+      IsLoginAction.plugin,
       AccessAuth.plugin,
       CheckAuthAction.plugin,
       AddResourceToRoleOrUser.plugin
