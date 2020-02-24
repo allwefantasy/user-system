@@ -7,8 +7,8 @@ development:
       host: 127.0.0.1
       port: 3306
       database: basic_app_runtime
-      username: xxxx
-      password: xxxx
+      username: root
+      password: mlsql
       initialSize: 8
       disable: false
       removeAbandoned: true
@@ -76,4 +76,6 @@ http:
   client:
     accept:
       timeout: 43200000
+
+admin_token: admin
 

@@ -51,7 +51,7 @@ class AddResourceToRoleOrUser extends ActionRequireLogin {
 object AddResourceToRoleOrUser {
 
   object Params {
-    val ADMIN_TOKEN = Input("adminToken", "")
+    val ADMIN_TOKEN = Input("admin_token", "")
     val ROLE_NAME = Input("roleName", "")
     val AUTHORIZED_USER_NAME = Input("authUser", "")
     val RESOURCE_NAME = Input("resourceName", "")

@@ -27,7 +27,7 @@ class EnableOrDisableRegAction extends ActionRequireResourceAccess {
 object EnableOrDisableRegAction {
 
   object Params {
-    val ADMIN_TOKEN = Input("adminToken", "")
+    val ADMIN_TOKEN = Input("admin_token", "")
     
     val ENABLE_REG = Select("enable", values = List(), valueProvider = Option(() => {
       List(KV(Option("Enable"), Option("true")), KV(Option("Disable"), Option("false")))

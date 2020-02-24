@@ -2,6 +2,7 @@ package tech.mlsql.app_runtime.plugin.user.action
 
 import tech.mlsql.app_runtime.commons.Input
 import tech.mlsql.app_runtime.db.service.BasicDBService
+import tech.mlsql.app_runtime.plugin.user.quill_model.User
 import tech.mlsql.common.utils.serder.json.JSONTool
 import tech.mlsql.serviceframework.platform.action.{ActionContext, CustomAction}
 
@@ -30,9 +31,32 @@ abstract class BaseAction extends CustomAction {
     render(200, JSONTool.toJsonStr(List(Map())))
     ""
   }
+
+  def getUserName(params: Map[String, String]) = {
+    val userName = if (params.contains(UserService.Config.USER_ID)) {
+      val user = getUser(params)
+      user.get.name
+    } else {
+      params.getOrElse(UserService.Config.USER_NAME, "")
+    }
+    userName
+  }
+
+  def getUser(params: Map[String, String]) = {
+    val users = JSONTool.parseJson[List[User]](UserSystemActionProxy.proxy.run(UserQuery.action, params))
+    users.headOption
+  }
+
+  def paramEmptyAsNone(params: Map[String, String], name: String) = {
+    params.get(name) match {
+      case Some(value) => if (value.isEmpty) None else Some(value)
+      case None => None
+    }
+  }
 }
 
 abstract class ActionRequireLogin extends BaseAction {
+
   override def run(params: Map[String, String]): String = {
     if (params.contains(ActionRequireLogin.Params.HELP.name)) {
       _help()
@@ -42,7 +66,9 @@ abstract class ActionRequireLogin extends BaseAction {
       if (BasicDBService.adminToken == token) {
         return _run(params)
       }
-      val userName = params.getOrElse(UserService.Config.USER_NAME, "")
+
+      val userName = getUserName(params)
+
       val loginToken = params.getOrElse(UserService.Config.LOGIN_TOKEN, "")
       if (UserService.isLogin(userName, loginToken).size > 0) {
         return _run(params)
@@ -58,7 +84,7 @@ abstract class ActionRequireResourceAccess extends BaseAction {
       _help()
     }
     else {
-      val canAccess = UserService.checkLoginAndResourceAccess(AddResourceToRoleOrUser.action, params)
+      val canAccess = UserService.checkLoginAndResourceAccess(params("action"), params)
       if (!canAccess.access) {
         return render(400, JSONTool.toJsonStr(List(Map("msg" -> canAccess.msg))))
       }

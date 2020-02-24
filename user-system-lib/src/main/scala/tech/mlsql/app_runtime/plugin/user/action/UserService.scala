@@ -16,6 +16,7 @@ object UserService extends RenderFunctions {
   object Config {
     val LOGIN_TOKEN = "access-token"
     val USER_NAME = "userName"
+    val USER_ID = "userId"
     val RESOURCE_KEY = "resourceKey"
   }
 
@@ -35,10 +36,16 @@ object UserService extends RenderFunctions {
     if (BasicDBService.adminToken == token) return CanAccess(true, "")
 
     if (BasicDBService.isDBSupport) {
-      val userName = params.getOrElse(UserService.Config.USER_NAME, "")
+      val userName = if (params.contains(UserService.Config.USER_ID)) {
+        val users = JSONTool.parseJson[List[User]](UserSystemActionProxy.proxy.run(UserQuery.action, params))
+        users.head.name
+      } else {
+        params.getOrElse(UserService.Config.USER_NAME, "")
+      }
+
       val token = params.getOrElse(UserService.Config.LOGIN_TOKEN, "")
       if (isLogin(userName, token).isEmpty) {
-        return CanAccess(false, "login ise required")
+        return CanAccess(false, "login is required")
       }
 
       val resourceName = resourceKey
