@@ -17,8 +17,9 @@ class IsLoginAction extends BaseAction {
 
     def tokenMatch(token: String) = {
       UserSessionDB.session.get(name).headOption match {
-        case Some(item) => if (item.token == token) List(item)
-        else List()
+        case Some(item) =>
+          if (item.token == token) List(item)
+          else List()
         case None => List()
       }
     }
