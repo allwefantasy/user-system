@@ -23,6 +23,38 @@
         <scope>provided</scope>
     </properties>
 
+    <name>user-plugin</name>
+    <url>https://github.com/allwefantasy/user-system</url>
+    <description>
+        user plugin for web-platform
+    </description>
+    <licenses>
+        <license>
+            <name>Apache 2.0 License</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>allwefantasy</id>
+            <name>ZhuHaiLin</name>
+            <email>allwefantasy@gmail.com</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>
+            scm:git:git@github.com:allwefantasy/user-system.git
+        </connection>
+        <developerConnection>
+            scm:git:git@github.com:allwefantasy/user-system.git
+        </developerConnection>
+        <url>https://github.com/allwefantasy/user-system</url>
+    </scm>
+    <issueManagement>
+        <url>https://github.com/allwefantasy/user-system/issues</url>
+    </issueManagement>
+
     <profiles>
         <profile>
             <id>scala-2.11</id>
