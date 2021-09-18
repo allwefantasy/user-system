@@ -21,7 +21,9 @@ class UserLoginAction extends BaseAction {
             val session = Session(token, Map())
             UserSessionDB.session.set(name, session)
             List(session)
-          case None => List[Session]()
+          case None =>
+            val session = Session("UserName or Password is wrong", Map())
+            List[Session](session)
         }
       case (_, _) => List[Session]()
     }
