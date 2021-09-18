@@ -1,12 +1,9 @@
 package tech.mlsql.app_runtime.plugin
 
 import tech.mlsql.app_runtime.user.action._
-import tech.mlsql.serviceframework.platform.{PluginItem, _}
+import tech.mlsql.serviceframework.platform.{Plugin, PluginItem}
 
-/**
- * 21/1/2020 WilliamZhu(allwefantasy@gmail.com)
- */
-class PluginDesc extends Plugin {
+class UserPluginDesc extends Plugin {
   override def entries: List[PluginItem] = {
     List(
       UserLoginAction.plugin,
@@ -18,12 +15,5 @@ class PluginDesc extends Plugin {
       CheckAuthAction.plugin,
       AddResourceToRoleOrUser.plugin
     )
-  }
-
-  def registerForTest() = {
-    val pluginLoader = PluginLoader(Thread.currentThread().getContextClassLoader, this)
-    entries.foreach { item =>
-      AppRuntimeStore.store.registerAction(item.name, item.clzzName, pluginLoader)
-    }
   }
 }

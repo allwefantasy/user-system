@@ -1,4 +1,4 @@
-package tech.mlsql.app_runtime.plugin.user
+package tech.mlsql.app_runtime.user
 
 /**
  * __redis__user-system -> boolean

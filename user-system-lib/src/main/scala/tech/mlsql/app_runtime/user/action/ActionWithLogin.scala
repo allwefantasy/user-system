@@ -1,8 +1,8 @@
-package tech.mlsql.app_runtime.plugin.user.action
+package tech.mlsql.app_runtime.user.action
 
-import tech.mlsql.app_runtime.commons.Input
+import tech.mlsql.serviceframework.platform.form.Input
 import tech.mlsql.app_runtime.db.service.BasicDBService
-import tech.mlsql.app_runtime.plugin.user.quill_model.User
+import tech.mlsql.app_runtime.user.quill_model.User
 import tech.mlsql.common.utils.serder.json.JSONTool
 import tech.mlsql.serviceframework.platform.action.{ActionContext, CustomAction}
 

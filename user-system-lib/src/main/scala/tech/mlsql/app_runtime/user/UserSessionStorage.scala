@@ -1,4 +1,4 @@
-package tech.mlsql.app_runtime.plugin.user
+package tech.mlsql.app_runtime.user
 
 /**
  * 30/1/2020 WilliamZhu(allwefantasy@gmail.com)

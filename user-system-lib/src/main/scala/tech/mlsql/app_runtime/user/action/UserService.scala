@@ -1,11 +1,11 @@
-package tech.mlsql.app_runtime.plugin.user.action
+package tech.mlsql.app_runtime.user.action
 
 import tech.mlsql.app_runtime.db.quill_model.DictType
 import tech.mlsql.app_runtime.db.service.BasicDBService
-import tech.mlsql.app_runtime.plugin.user.PluginDB.ctx
-import tech.mlsql.app_runtime.plugin.user.PluginDB.ctx._
-import tech.mlsql.app_runtime.plugin.user.SystemConfig
-import tech.mlsql.app_runtime.plugin.user.quill_model._
+import tech.mlsql.app_runtime.user.PluginDB.ctx
+import tech.mlsql.app_runtime.user.PluginDB.ctx._
+import tech.mlsql.app_runtime.user.{Session, SystemConfig}
+import tech.mlsql.app_runtime.user.quill_model.{Resource, RoleResource, User, UserResource, UserRole}
 import tech.mlsql.common.utils.Md5
 import tech.mlsql.common.utils.serder.json.JSONTool
 import tech.mlsql.serviceframework.platform.action.RenderFunctions
@@ -26,7 +26,7 @@ object UserService extends RenderFunctions {
       UserService.Config.USER_NAME -> userName,
       UserService.Config.LOGIN_TOKEN -> token
     ))
-    JSONTool.parseJson[List[tech.mlsql.app_runtime.plugin.user.Session]](isLoginStr)
+    JSONTool.parseJson[List[Session]](isLoginStr)
   }
 
   def checkLoginAndResourceAccess(resourceKey: String, params: Map[String, String]): CanAccess = {

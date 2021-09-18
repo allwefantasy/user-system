@@ -1,10 +1,10 @@
-package tech.mlsql.app_runtime.plugin.user.action
+package tech.mlsql.app_runtime.user.action
 
-import tech.mlsql.app_runtime.commons.{FormParams, Input, KV, Select}
 import tech.mlsql.app_runtime.db.quill_model.DictType
 import tech.mlsql.app_runtime.db.service.BasicDBService
-import tech.mlsql.app_runtime.plugin.user.SystemConfig
+import tech.mlsql.app_runtime.user.SystemConfig
 import tech.mlsql.common.utils.serder.json.JSONTool
+import tech.mlsql.serviceframework.platform.form.{FormParams, Input, KV, Select}
 import tech.mlsql.serviceframework.platform.{PluginItem, PluginType}
 
 /**
@@ -28,7 +28,7 @@ object EnableOrDisableRegAction {
 
   object Params {
     val ADMIN_TOKEN = Input("admin_token", "")
-    
+
     val ENABLE_REG = Select("enable", values = List(), valueProvider = Option(() => {
       List(KV(Option("Enable"), Option("true")), KV(Option("Disable"), Option("false")))
     }))

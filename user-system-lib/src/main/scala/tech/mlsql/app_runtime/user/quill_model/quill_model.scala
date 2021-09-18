@@ -1,4 +1,4 @@
-package tech.mlsql.app_runtime.plugin.user.quill_model
+package tech.mlsql.app_runtime.user.quill_model
 
 case class User(id: Int, var name: String, var password: String)
 

@@ -1,9 +1,9 @@
-package tech.mlsql.app_runtime.plugin.user.action
+package tech.mlsql.app_runtime.user.action
 
-import tech.mlsql.app_runtime.commons.{FormParams, Input}
-import tech.mlsql.app_runtime.plugin.user.PluginDB.ctx
-import tech.mlsql.app_runtime.plugin.user.PluginDB.ctx._
-import tech.mlsql.app_runtime.plugin.user.quill_model.User
+import tech.mlsql.serviceframework.platform.form.{FormParams, Input}
+import tech.mlsql.app_runtime.user.PluginDB.ctx
+import tech.mlsql.app_runtime.user.PluginDB.ctx._
+import tech.mlsql.app_runtime.user.quill_model.User
 import tech.mlsql.common.utils.Md5
 import tech.mlsql.common.utils.serder.json.JSONTool
 import tech.mlsql.serviceframework.platform.{PluginItem, PluginType}

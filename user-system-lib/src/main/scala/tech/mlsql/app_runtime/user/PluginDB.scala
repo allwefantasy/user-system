@@ -1,4 +1,4 @@
-package tech.mlsql.app_runtime.plugin.user
+package tech.mlsql.app_runtime.user
 
 import net.csdn.jpa.QuillDB
 import tech.mlsql.app_runtime.db.quill_model.DictType

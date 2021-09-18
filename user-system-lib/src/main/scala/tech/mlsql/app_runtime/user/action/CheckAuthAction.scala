@@ -1,4 +1,4 @@
-package tech.mlsql.app_runtime.plugin.user.action
+package tech.mlsql.app_runtime.user.action
 
 import tech.mlsql.common.utils.serder.json.JSONTool
 import tech.mlsql.serviceframework.platform.action.CustomAction

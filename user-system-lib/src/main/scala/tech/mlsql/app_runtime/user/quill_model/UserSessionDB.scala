@@ -1,8 +1,8 @@
-package tech.mlsql.app_runtime.plugin.user.quill_model
+package tech.mlsql.app_runtime.user.quill_model
 
-import tech.mlsql.app_runtime.plugin.user.PluginDB.ctx
-import tech.mlsql.app_runtime.plugin.user.PluginDB.ctx._
-import tech.mlsql.app_runtime.plugin.user.{Session, UserSessionStorage}
+import tech.mlsql.app_runtime.user.PluginDB.ctx
+import tech.mlsql.app_runtime.user.PluginDB.ctx._
+import tech.mlsql.app_runtime.user.{Session, UserSessionStorage}
 import tech.mlsql.common.utils.serder.json.JSONTool
 
 

@@ -1,4 +1,4 @@
-package tech.mlsql.app_runtime.plugin.user
+package tech.mlsql.app_runtime.user
 
 object SystemConfig extends Enumeration {
   type SystemConfig = Value
