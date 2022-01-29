@@ -5,13 +5,14 @@ import java.util.UUID
 import tech.mlsql.app_runtime.user.Session
 import tech.mlsql.app_runtime.user.quill_model.UserSessionDB
 import tech.mlsql.common.utils.serder.json.JSONTool
+import tech.mlsql.serviceframework.platform.action.attribute.{GroupAttribute, ModuleAttribute}
 import tech.mlsql.serviceframework.platform.form.{FormParams, Input}
 import tech.mlsql.serviceframework.platform.{PluginItem, PluginType}
 
 /**
  * 19/2/2020 WilliamZhu(allwefantasy@gmail.com)
  */
-class UserLoginAction extends BaseAction {
+class UserLoginAction extends BaseAction with ActionInfo{
   override def _run(params: Map[String, String]): String = {
     val items = (params.get(UserLoginAction.Params.USER_NAME.name), params.get(UserLoginAction.Params.PASSWORD.name)) match {
       case (Some(name), Some(password)) =>

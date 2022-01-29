@@ -7,10 +7,11 @@ import tech.mlsql.app_runtime.user.quill_model.User
 import tech.mlsql.app_runtime.user.Session
 import tech.mlsql.common.utils.serder.json.JSONTool
 import tech.mlsql.serviceframework.platform.action.ActionContext
+import tech.mlsql.serviceframework.platform.action.attribute.{GroupAttribute, ModuleAttribute}
 import tech.mlsql.serviceframework.platform.{PluginItem, PluginType}
 
 
-class UserQuery extends BaseAction {
+class UserQuery extends BaseAction with ActionInfo{
 
   override def _run(params: Map[String, String]): String = {
     val items = params.get(UserService.Config.USER_NAME) match {
@@ -39,6 +40,7 @@ class UserQuery extends BaseAction {
   override def _help(): String = {
     JSONTool.toJsonStr(FormParams.toForm(UserQuery.Params).toList.reverse)
   }
+  
 }
 
 

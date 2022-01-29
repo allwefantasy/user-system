@@ -7,7 +7,7 @@ import tech.mlsql.serviceframework.platform.{PluginItem, PluginType}
 /**
  * 4/2/2020 WilliamZhu(allwefantasy@gmail.com)
  */
-class CheckAuthAction extends CustomAction {
+class CheckAuthAction extends CustomAction with ActionInfo{
   override def run(params: Map[String, String]): String = {
     val access = UserService.checkLoginAndResourceAccess(params(UserService.Config.RESOURCE_KEY), params)
     JSONTool.toJsonStr(access)

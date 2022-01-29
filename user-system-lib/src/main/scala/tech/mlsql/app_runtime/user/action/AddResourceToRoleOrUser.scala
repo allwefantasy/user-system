@@ -11,7 +11,7 @@ import tech.mlsql.serviceframework.platform.{PluginItem, PluginType}
 /**
  * 4/2/2020 WilliamZhu(allwefantasy@gmail.com)
  */
-class AddResourceToRoleOrUser extends ActionRequireLogin {
+class AddResourceToRoleOrUser extends ActionRequireLogin with ActionInfo{
 
 
   override def _run(params: Map[String, String]): String = {

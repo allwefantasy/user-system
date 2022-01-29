@@ -4,7 +4,7 @@ import tech.mlsql.common.utils.serder.json.JSONTool
 import tech.mlsql.serviceframework.platform.action.CustomAction
 import tech.mlsql.serviceframework.platform.{PluginItem, PluginType}
 
-class AccessAuth extends CustomAction {
+class AccessAuth extends CustomAction with ActionInfo{
 
   override def run(params: Map[String, String]): String = {
     val userName = params("userName")

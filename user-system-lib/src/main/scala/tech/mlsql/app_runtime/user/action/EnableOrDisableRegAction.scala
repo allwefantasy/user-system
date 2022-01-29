@@ -10,7 +10,7 @@ import tech.mlsql.serviceframework.platform.{PluginItem, PluginType}
 /**
  * 19/2/2020 WilliamZhu(allwefantasy@gmail.com)
  */
-class EnableOrDisableRegAction extends ActionRequireResourceAccess {
+class EnableOrDisableRegAction extends ActionRequireResourceAccess with ActionInfo{
   override def _run(params: Map[String, String]): String = {
     val value = if (params(EnableOrDisableRegAction.Params.ENABLE_REG.name).toBoolean) SystemConfig.REG_ENABLE.toString
     else SystemConfig.REG_DISABLE.toString
