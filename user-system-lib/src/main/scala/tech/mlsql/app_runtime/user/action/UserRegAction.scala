@@ -1,18 +1,17 @@
 package tech.mlsql.app_runtime.user.action
 
-import tech.mlsql.serviceframework.platform.form.{FormParams, Input}
 import tech.mlsql.app_runtime.user.PluginDB.ctx
 import tech.mlsql.app_runtime.user.PluginDB.ctx._
 import tech.mlsql.app_runtime.user.quill_model.User
 import tech.mlsql.common.utils.Md5
 import tech.mlsql.common.utils.serder.json.JSONTool
-import tech.mlsql.serviceframework.platform.action.attribute.{GroupAttribute, ModuleAttribute}
+import tech.mlsql.serviceframework.platform.form.{FormParams, Input}
 import tech.mlsql.serviceframework.platform.{PluginItem, PluginType}
 
 /**
  * 19/2/2020 WilliamZhu(allwefantasy@gmail.com)
  */
-class UserRegAction extends BaseAction with ActionInfo{
+class UserRegAction extends BaseAction with ActionInfo {
   override def _run(params: Map[String, String]): String = {
     if (!UserService.isEnableReg) return JSONTool.toJsonStr(List(Map("msg" -> "User register is not enabled")))
 

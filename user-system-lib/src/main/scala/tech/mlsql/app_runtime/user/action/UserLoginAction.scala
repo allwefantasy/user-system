@@ -5,28 +5,26 @@ import java.util.UUID
 import tech.mlsql.app_runtime.user.Session
 import tech.mlsql.app_runtime.user.quill_model.UserSessionDB
 import tech.mlsql.common.utils.serder.json.JSONTool
-import tech.mlsql.serviceframework.platform.action.attribute.{GroupAttribute, ModuleAttribute}
 import tech.mlsql.serviceframework.platform.form.{FormParams, Input}
 import tech.mlsql.serviceframework.platform.{PluginItem, PluginType}
 
 /**
  * 19/2/2020 WilliamZhu(allwefantasy@gmail.com)
  */
-class UserLoginAction extends BaseAction with ActionInfo{
+class UserLoginAction extends BaseAction with ActionInfo {
   override def _run(params: Map[String, String]): String = {
     val items = (params.get(UserLoginAction.Params.USER_NAME.name), params.get(UserLoginAction.Params.PASSWORD.name)) match {
       case (Some(name), Some(password)) =>
         UserService.login(name, password) match {
           case Some(_) =>
             val token = UUID.randomUUID().toString
-            val session = Session(token, Map())
+            val session = Session(token, Map("userName" -> name))
             UserSessionDB.session.set(name, session)
             List(session)
           case None =>
-            val session = Session("UserName or Password is wrong", Map())
-            List[Session](session)
+            render(400, "UserName or Password is wrong")
         }
-      case (_, _) => List[Session]()
+      case (_, _) => render(400, "UserName or Password is wrong")
     }
     JSONTool.toJsonStr(items)
   }
@@ -46,4 +44,28 @@ object UserLoginAction {
 
   def plugin = PluginItem(UserLoginAction.action,
     classOf[UserLoginAction].getName, PluginType.action, None)
+}
+
+
+class UserLogOutAction extends BaseAction with ActionInfo {
+  override def _run(params: Map[String, String]): String = {
+    UserSessionDB.session.delete(params(UserLogOutAction.Params.USER_NAME.name))
+    JSONTool.toJsonStr(Array())
+  }
+
+  override def _help(): String = JSONTool.toJsonStr(
+    FormParams.toForm(UserLogOutAction.Params).toList.reverse)
+}
+
+object UserLogOutAction {
+
+  object Params {
+    val USER_NAME = Input(UserService.Config.USER_NAME, "")
+  }
+
+  def action = "userLogout"
+
+  def plugin = PluginItem(UserLogOutAction.action,
+    classOf[UserLogOutAction].getName, PluginType.action, None)
+
 }

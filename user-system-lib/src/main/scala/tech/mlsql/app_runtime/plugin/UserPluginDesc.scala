@@ -7,6 +7,7 @@ class UserPluginDesc extends Plugin {
   override def entries: List[PluginItem] = {
     List(
       UserLoginAction.plugin,
+      UserLogOutAction.plugin,
       UserQuery.plugin,
       EnableOrDisableRegAction.plugin,
       UserRegAction.plugin,
