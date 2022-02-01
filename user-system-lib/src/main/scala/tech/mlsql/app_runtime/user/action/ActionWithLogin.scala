@@ -43,7 +43,7 @@ abstract class BaseAction extends CustomAction {
   }
 
   def getUser(params: Map[String, String]) = {
-    val users = JSONTool.parseJson[List[User]](UserSystemActionProxy.proxy.run(UserQuery.action, params))
+    val users = JSONTool.parseJson[List[User]](new UserQuery().run(params))
     users.headOption
   }
 
