@@ -47,7 +47,7 @@ object UserLoginAction {
 }
 
 
-class UserLogOutAction extends BaseAction with ActionInfo {
+class UserLogOutAction extends ActionRequireLogin with ActionInfo {
   override def _run(params: Map[String, String]): String = {
     UserSessionDB.session.delete(params(UserLogOutAction.Params.USER_NAME.name))
     JSONTool.toJsonStr(Array())
