@@ -37,7 +37,7 @@ object UserService extends RenderFunctions {
 
     if (BasicDBService.isDBSupport) {
       val userName = if (params.contains(UserService.Config.USER_ID)) {
-        val users = JSONTool.parseJson[List[User]](UserSystemActionProxy.proxy.run(UserQuery.action, params))
+        val users = JSONTool.parseJson[List[User]](new UserQuery().run(params))
         users.head.name
       } else {
         params.getOrElse(UserService.Config.USER_NAME, "")
@@ -49,7 +49,7 @@ object UserService extends RenderFunctions {
       }
 
       val resourceName = resourceKey
-      val resStr = UserSystemActionProxy.proxy.run(AccessAuth.action,
+      val resStr = new AccessAuth().run(
         Map(
           "userName" -> userName,
           "resourceName" -> resourceName
