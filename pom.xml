@@ -7,7 +7,7 @@
     <groupId>tech.mlsql.serviceframework.baseweb</groupId>
     <artifactId>user-system_2.11</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <modules>
         <module>user-system-lib</module>
         <module>user-system-bin</module>
