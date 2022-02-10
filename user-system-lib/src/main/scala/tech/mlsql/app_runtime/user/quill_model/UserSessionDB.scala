@@ -23,11 +23,12 @@ class UserSessionDB extends UserSessionStorage {
   override def get(name: String): Option[Session] = {
     val sess = ctx.run(userSession(name)).headOption
     if (sess.isDefined &&
-      sess.get.createTime != null &&
-      (System.currentTimeMillis() - sess.get.createTime) > 6 * 60 * 60 * 1000) {
+      (System.currentTimeMillis() - sess.get.createTime) > 8 * 60 * 60 * 1000) {
       delete(sess.head.name)
       return None
     }
+    //todo: here we can optimize do not update the session every access
+    ctx.run(ctx.query[UserSession].filter(_.name == lift(name)).update(_.createTime -> lift(System.currentTimeMillis())))
     sess.map(f => JSONTool.parseJson[Session](f.session))
   }
 

@@ -14,7 +14,16 @@ class UserPluginDesc extends Plugin {
       IsLoginAction.plugin,
       AccessAuth.plugin,
       CheckAuthAction.plugin,
-      AddResourceToRoleOrUser.plugin
+      AddResourceToRoleOrUser.plugin,
+      ListTeamAction.plugin,
+      AddRoleAction.plugin,
+      ListRoleAction.plugin,
+      AddTeamAction.plugin,
+      ListTeamForFormAction.plugin,
+      AddUserToRole.plugin,
+      ListRoleInTeamAction.plugin,
+      ListRoleInTeamForFormAction.plugin,
+      RemoveUserFromRole.plugin
     )
   }
 }

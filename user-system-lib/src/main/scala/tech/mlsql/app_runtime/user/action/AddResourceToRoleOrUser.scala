@@ -1,23 +1,26 @@
 package tech.mlsql.app_runtime.user.action
 
-import tech.mlsql.serviceframework.platform.form.{FormParams, Input}
 import tech.mlsql.app_runtime.user.PluginDB.ctx
 import tech.mlsql.app_runtime.user.PluginDB.ctx._
 import tech.mlsql.app_runtime.user.action.AddResourceToRoleOrUser.Params
-import tech.mlsql.app_runtime.user.quill_model.{Resource, Role, RoleResource, UserResource}
+import tech.mlsql.app_runtime.user.quill_model.{Resource, Role, RoleResource, UserResource,Team}
 import tech.mlsql.common.utils.serder.json.JSONTool
+import tech.mlsql.serviceframework.platform.form.{FormParams, Input}
 import tech.mlsql.serviceframework.platform.{PluginItem, PluginType}
 
 /**
  * 4/2/2020 WilliamZhu(allwefantasy@gmail.com)
  */
-class AddResourceToRoleOrUser extends ActionRequireLogin with ActionInfo{
+class AddResourceToRoleOrUser extends ActionRequireLogin with ActionInfo {
 
+  def msg(str: String) = {
+    JSONTool.toJsonStr(List(Map("msg" -> str)))
+  }
 
   override def _run(params: Map[String, String]): String = {
     val canAccess = UserService.checkLoginAndResourceAccess(AddResourceToRoleOrUser.action, params)
     if (!canAccess.access) {
-      return render(400, JSONTool.toJsonStr(List(Map("msg" -> canAccess.msg))))
+      return render(400, msg(canAccess.msg))
     }
     val resourceName = params(Params.RESOURCE_NAME.name)
     val resourceOpt = ctx.run(
@@ -31,7 +34,11 @@ class AddResourceToRoleOrUser extends ActionRequireLogin with ActionInfo{
 
     params.get(Params.ROLE_NAME.name) match {
       case Some(roleName) =>
-        val roleId = ctx.run(ctx.query[Role].filter(_.name == lift(roleName))).head.id
+        val roleOpt = ctx.run(ctx.query[Role].filter(_.name == lift(roleName))).headOption
+        if (roleOpt.isEmpty) {
+          render(400, msg(s"Role [${roleName}] not exits"))
+        }
+        val roleId = roleOpt.get.id
         ctx.run(ctx.query[RoleResource].
           insert(_.resourceId -> lift(resourceId), _.roleId -> lift(roleId)).
           onConflictIgnore(_.roleId, _.resourceId))
@@ -41,7 +48,7 @@ class AddResourceToRoleOrUser extends ActionRequireLogin with ActionInfo{
           insert(_.resourceId -> lift(resourceId), _.userId -> lift(userId)).
           onConflictIgnore(_.userId, _.resourceId))
     }
-    JSONTool.toJsonStr(Map("msg" -> "success"))
+    msg("success")
   }
 
   override def _help(): String = JSONTool.toJsonStr(
