@@ -25,7 +25,7 @@ CREATE TABLE `role` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
-DROP TABLE IF EXISTS `group`;
+DROP TABLE IF EXISTS `team`;
 
 CREATE TABLE `team` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
