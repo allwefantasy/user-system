@@ -132,13 +132,13 @@ object AddUserToRole {
   object Params {
     val INVITE_USER_NAME = Input("invite_user_name", "")
     val TEAM_ID = Dynamic(
-      name = "team",
+      name = "teamId",
       subTpe = "Select",
       depends = List(Params.INVITE_USER_NAME.name),
       valueProviderName = ListTeamForFormAction.action)
 
     val ROLE_ID = Dynamic(
-      name = "role",
+      name = "roleId",
       subTpe = "Select",
       depends = List(Params.TEAM_ID.name),
       valueProviderName = ListRoleInTeamForFormAction.action
@@ -190,13 +190,13 @@ object RemoveUserFromRole {
   object Params {
     val INVITE_USER_NAME = Input("invite_user_name", "")
     val TEAM_ID = Dynamic(
-      name = "team",
+      name = "teamId",
       subTpe = "Select",
       depends = List(Params.INVITE_USER_NAME.name),
       valueProviderName = ListTeamForFormAction.action)
 
     val ROLE_ID = Dynamic(
-      name = "role",
+      name = "roleId",
       subTpe = "Select",
       depends = List(Params.TEAM_ID.name),
       valueProviderName = ListRoleInTeamForFormAction.action
@@ -232,7 +232,7 @@ object ListRoleInTeamAction {
     val TEAM_ID = Input("teamId", "")
   }
 
-  def action = ""
+  def action = "/user/team/role/list"
 
   def plugin = PluginItem(ListRoleInTeamAction.action, classOf[ListRoleInTeamAction].getName, PluginType.action, None)
 }
@@ -256,7 +256,7 @@ object ListRoleInTeamForFormAction {
 
   }
 
-  def action = ""
+  def action = "/user/form/team/role/list"
 
   def plugin = PluginItem(ListRoleInTeamForFormAction.action, classOf[ListRoleInTeamForFormAction].getName, PluginType.action, None)
 }
@@ -265,7 +265,7 @@ object ListRoleInTeamForFormAction {
 class AddRoleAction extends ActionRequireLogin with ActionInfo {
   override def _run(params: Map[String, String]): String = {
     // role can only be added by who has role `admin`
-    val teamId = params(AddRoleAction.Params.Group.name)
+    val teamId = params(AddRoleAction.Params.TEAM_ID.name)
     val userId = getUser(params).get.id
 
     val roles = ctx.run(
@@ -300,8 +300,8 @@ object AddRoleAction {
 
   object Params {
     val ROLE_NAME = Input("name", "")
-    val Group = Dynamic(
-      name = "team",
+    val TEAM_ID = Dynamic(
+      name = "teamId",
       subTpe = "Select",
       depends = List(Params.ROLE_NAME.name),
       valueProviderName = ListTeamForFormAction.action)
@@ -379,7 +379,7 @@ class ListTeamAction extends ActionRequireLogin with ActionInfo {
         map { case ((userRole, role), group) => group }
     ).toList
 
-    JSONTool.toJsonStr(groups)
+    JSONTool.toJsonStr(groups.groupBy(_.id).map(_._2.head))
   }
 
   override def _help(): String = {
