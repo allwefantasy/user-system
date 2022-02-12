@@ -8,7 +8,6 @@ class UserPluginDesc extends Plugin {
     List(
       UserLoginAction.plugin,
       UserLogOutAction.plugin,
-      UserQuery.plugin,
       EnableOrDisableRegAction.plugin,
       UserRegAction.plugin,
       IsLoginAction.plugin,
