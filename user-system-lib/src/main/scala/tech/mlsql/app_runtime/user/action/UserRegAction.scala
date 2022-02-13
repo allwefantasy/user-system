@@ -29,7 +29,7 @@ class UserRegAction extends BaseAction with ActionInfo {
           _.createdTime -> lift(System.currentTimeMillis()),
           _.email -> lift(email)
         ))
-        JSONTool.toJsonStr(List(Map("msg" -> s"User ${params(UserService.Config.USER_NAME)} is registered")))
+        JSONTool.toJsonStr(List(Map("msg" -> s"Your account have been created. Please wait admin to activate it.")))
     }
   }
 

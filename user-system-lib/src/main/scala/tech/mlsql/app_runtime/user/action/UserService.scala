@@ -118,11 +118,11 @@ object UserService extends RenderFunctions {
   }
 
   def findUser(name: String) = {
-    ctx.run(users().filter(_.name == lift(name))).filter(_.activated == lift(UserConstant.ACTIVATED)).headOption
+    ctx.run(users().filter(_.name == lift(name)).filter(_.activated == lift(UserConstant.ACTIVATED))).headOption
   }
 
   def findUserById(id: Int) = {
-    ctx.run(users().filter(_.id == lift(id))).filter(_.activated == lift(UserConstant.ACTIVATED)).headOption
+    ctx.run(users().filter(_.id == lift(id)).filter(_.activated == lift(UserConstant.ACTIVATED))).headOption
   }
 
   def activateUser(name: String) = {

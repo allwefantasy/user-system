@@ -13,6 +13,7 @@ import tech.mlsql.serviceframework.platform.{PluginItem, PluginType}
  */
 class UserLoginAction extends BaseAction with ActionInfo {
   override def _run(params: Map[String, String]): String = {
+    val msg = "UserName or Password are not matched (Maybe Your account is not activated yet)"
     val items = (params.get(UserLoginAction.Params.USER_NAME.name), params.get(UserLoginAction.Params.PASSWORD.name)) match {
       case (Some(name), Some(password)) =>
         UserService.login(name, password) match {
@@ -22,9 +23,9 @@ class UserLoginAction extends BaseAction with ActionInfo {
             UserSessionDB.session.set(name, session)
             List(session)
           case None =>
-            render(400, "UserName or Password is wrong")
+            render(400, ActionHelper.msg(msg))
         }
-      case (_, _) => render(400, "UserName or Password is wrong")
+      case (_, _) => render(400, "UserName or Password is not matched")
     }
     JSONTool.toJsonStr(items)
   }

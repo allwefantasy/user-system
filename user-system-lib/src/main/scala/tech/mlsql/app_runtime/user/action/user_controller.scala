@@ -437,7 +437,7 @@ class UnActivateUser extends BaseAction with ActionInfo {
       render(403, ActionHelper.msg("forbidden"))
     }
     val activateUserName = params(Params.ACTIVATE_USER_NAME.name)
-    if (UserService.findUser(activateUserName).isEmpty) {
+    if (ctx.run(ctx.query[User].filter(_.name == lift(activateUserName)).size) == 0) {
       render(400, ActionHelper.msg("The activate user name is not exists"))
     }
     UserService.unActivateUser(activateUserName)
@@ -469,7 +469,7 @@ class ActivateUser extends BaseAction with ActionInfo {
       render(403, ActionHelper.msg("forbidden"))
     }
     val activateUserName = params(Params.ACTIVATE_USER_NAME.name)
-    if (UserService.findUser(activateUserName).isEmpty) {
+    if (ctx.run(ctx.query[User].filter(_.name == lift(activateUserName)).size) == 0) {
       render(400, ActionHelper.msg("The activate user name is not exists"))
     }
     UserService.activateUser(activateUserName)
@@ -506,7 +506,7 @@ class ListUnActivatedUserAction extends BaseAction with ActionInfo {
     val pageOffset = params.getOrElse(Params.PAGE_OFFSET.name, "0").toInt
     val users = ctx.run(ctx.query[User].
       filter(_.activated == lift(UserConstant.IN_ACTIVATED)).
-      sortBy(_.createdTime)(Ord.desc).drop(pageOffset * pageSize).take(pageSize)
+      sortBy(_.createdTime)(Ord.desc).drop(lift(pageOffset * pageSize)).take(lift(pageSize))
     )
     JSONTool.toJsonStr(users)
   }
