@@ -129,6 +129,10 @@ object UserService extends RenderFunctions {
     ctx.run(ctx.query[User].filter(_.name == lift(name)).update(_.activated -> lift(UserConstant.ACTIVATED)))
   }
 
+  def unActivateUser(name: String) = {
+    ctx.run(ctx.query[User].filter(_.name == lift(name)).update(_.activated -> lift(UserConstant.IN_ACTIVATED)))
+  }
+
   def activateUserById(id: Int) = {
     ctx.run(ctx.query[User].filter(_.id == lift(id)).update(_.activated -> lift(UserConstant.ACTIVATED)))
   }

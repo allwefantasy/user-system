@@ -430,6 +430,38 @@ object ActionHelper {
 }
 
 
+class UnActivateUser extends BaseAction {
+  override def _run(params: Map[String, String]): String = {
+    import UnActivateUser.Params
+    if (params.getOrElse(Params.ADMIN_TOKEN.name, "") != BasicDBService.adminToken) {
+      render(403, ActionHelper.msg("forbidden"))
+    }
+    val activateUserName = params(Params.ACTIVATE_USER_NAME.name)
+    if (UserService.findUser(activateUserName).isEmpty) {
+      render(400, ActionHelper.msg("The activate user name is not exists"))
+    }
+    UserService.unActivateUser(activateUserName)
+    ActionHelper.msg("Success")
+  }
+
+  override def _help(): String = {
+    JSONTool.toJsonStr(FormParams.toForm(UnActivateUser.Params).toList.reverse)
+  }
+}
+
+object UnActivateUser {
+
+  object Params {
+    val ADMIN_TOKEN = Input("admin_token", "")
+    val ACTIVATE_USER_NAME = Input("activateUserName", "")
+  }
+
+  def action = "/user/un_activate"
+
+  def plugin = PluginItem(UnActivateUser.action, classOf[UnActivateUser].getName, PluginType.action, None)
+}
+
+
 class ActivateUser extends BaseAction {
   override def _run(params: Map[String, String]): String = {
     import ActivateUser.Params
@@ -441,7 +473,7 @@ class ActivateUser extends BaseAction {
       render(400, ActionHelper.msg("The activate user name is not exists"))
     }
     UserService.activateUser(activateUserName)
-    JSONTool.toJsonStr(List[String]())
+    ActionHelper.msg("Success")
   }
 
   override def _help(): String = {
@@ -462,9 +494,9 @@ object ActivateUser {
 }
 
 
-class UnActivatedUserAction extends BaseAction {
+class ListUnActivatedUserAction extends BaseAction {
   override def _run(params: Map[String, String]): String = {
-    import UnActivatedUserAction.Params
+    import ListUnActivatedUserAction.Params
 
     if (params.getOrElse(Params.ADMIN_TOKEN.name, "") != BasicDBService.adminToken) {
       render(403, ActionHelper.msg("forbidden"))
@@ -480,11 +512,11 @@ class UnActivatedUserAction extends BaseAction {
   }
 
   override def _help(): String = {
-    JSONTool.toJsonStr(FormParams.toForm(UnActivatedUserAction.Params).toList.reverse)
+    JSONTool.toJsonStr(FormParams.toForm(ListUnActivatedUserAction.Params).toList.reverse)
   }
 }
 
-object UnActivatedUserAction {
+object ListUnActivatedUserAction {
 
   object Params {
     val ADMIN_TOKEN = Input("admin_token", "")
@@ -494,7 +526,7 @@ object UnActivatedUserAction {
 
   def action = "/user/unactivated/list"
 
-  def plugin = PluginItem(UnActivatedUserAction.action, classOf[UnActivatedUserAction].getName, PluginType.action, None)
+  def plugin = PluginItem(ListUnActivatedUserAction.action, classOf[ListUnActivatedUserAction].getName, PluginType.action, None)
 }
 
 

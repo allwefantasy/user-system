@@ -23,8 +23,9 @@ class UserPluginDesc extends Plugin {
       ListRoleInTeamAction.plugin,
       ListRoleInTeamForFormAction.plugin,
       RemoveUserFromRole.plugin,
-      UnActivatedUserAction.plugin,
-      ActivateUser.plugin
+      ListUnActivatedUserAction.plugin,
+      ActivateUser.plugin,
+      UnActivateUser.plugin
     )
   }
 }
