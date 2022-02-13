@@ -430,7 +430,7 @@ object ActionHelper {
 }
 
 
-class UnActivateUser extends BaseAction {
+class UnActivateUser extends BaseAction with ActionInfo {
   override def _run(params: Map[String, String]): String = {
     import UnActivateUser.Params
     if (params.getOrElse(Params.ADMIN_TOKEN.name, "") != BasicDBService.adminToken) {
@@ -462,7 +462,7 @@ object UnActivateUser {
 }
 
 
-class ActivateUser extends BaseAction {
+class ActivateUser extends BaseAction with ActionInfo {
   override def _run(params: Map[String, String]): String = {
     import ActivateUser.Params
     if (params.getOrElse(Params.ADMIN_TOKEN.name, "") != BasicDBService.adminToken) {
@@ -494,7 +494,7 @@ object ActivateUser {
 }
 
 
-class ListUnActivatedUserAction extends BaseAction {
+class ListUnActivatedUserAction extends BaseAction with ActionInfo {
   override def _run(params: Map[String, String]): String = {
     import ListUnActivatedUserAction.Params
 
