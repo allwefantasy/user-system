@@ -1,6 +1,12 @@
 package tech.mlsql.app_runtime.user.quill_model
 
-case class User(id: Int, var name: String, var password: String)
+case class User(id: Int,
+                var name: String,
+                var password: String,
+                activated: Int,
+                email: String,
+                createdTime: Long
+               )
 
 case class Role(id: Int, var name: String, teamId: Int)
 
@@ -16,4 +22,9 @@ case class UserSession(id: Int, name: String, session: String, createTime: Long)
 
 
 case class Team(id: Int, var name: String)
+
+object UserConstant {
+  val ACTIVATED = 1
+  val IN_ACTIVATED = 0
+}
 

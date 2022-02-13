@@ -1,9 +1,10 @@
 package tech.mlsql.app_runtime.user.action
 
+import tech.mlsql.app_runtime.db.service.BasicDBService
 import tech.mlsql.app_runtime.user.PluginDB.ctx
 import tech.mlsql.app_runtime.user.PluginDB.ctx._
 import tech.mlsql.app_runtime.user.Session
-import tech.mlsql.app_runtime.user.quill_model.{Role, Team, User, UserRole}
+import tech.mlsql.app_runtime.user.quill_model._
 import tech.mlsql.common.utils.serder.json.JSONTool
 import tech.mlsql.serviceframework.platform.action.ActionContext
 import tech.mlsql.serviceframework.platform.form.{Dynamic, FormParams, Input, KV}
@@ -21,7 +22,7 @@ class UserQuery extends BaseAction with ActionInfo {
       case None =>
         params.get(UserService.Config.USER_ID) match {
           case Some(id) =>
-            ctx.run(ctx.query[User].filter(_.id == lift(id.toInt))).
+            UserService.findUserById(id.toInt).
               map(user => user.copy(password = "******"))
           case None =>
             val context = ActionContext.context()
@@ -187,6 +188,7 @@ class RemoveUserFromRole extends ActionRequireLogin with ActionInfo {
 }
 
 object RemoveUserFromRole {
+
   object Params {
     val INVITE_USER_NAME = Input("invite_user_name", "")
     val TEAM_ID = Dynamic(
@@ -228,6 +230,7 @@ class ListRoleInTeamAction extends ActionRequireLogin with ActionInfo {
 }
 
 object ListRoleInTeamAction {
+
   object Params {
     val TEAM_ID = Input("teamId", "")
   }
@@ -252,6 +255,7 @@ class ListRoleInTeamForFormAction extends ActionRequireLogin with ActionInfo {
 }
 
 object ListRoleInTeamForFormAction {
+
   object Params {
 
   }
@@ -424,6 +428,75 @@ object ActionHelper {
     teamIds
   }
 }
+
+
+class ActivateUser extends BaseAction {
+  override def _run(params: Map[String, String]): String = {
+    import ActivateUser.Params
+    if (params.getOrElse(Params.ADMIN_TOKEN.name, "") != BasicDBService.adminToken) {
+      render(403, ActionHelper.msg("forbidden"))
+    }
+    val activateUserName = params(Params.ACTIVATE_USER_NAME.name)
+    if (UserService.findUser(activateUserName).isEmpty) {
+      render(400, ActionHelper.msg("The activate user name is not exists"))
+    }
+    UserService.activateUser(activateUserName)
+    JSONTool.toJsonStr(List[String]())
+  }
+
+  override def _help(): String = {
+    JSONTool.toJsonStr(FormParams.toForm(ActivateUser.Params).toList.reverse)
+  }
+}
+
+object ActivateUser {
+
+  object Params {
+    val ADMIN_TOKEN = Input("admin_token", "")
+    val ACTIVATE_USER_NAME = Input("activateUserName", "")
+  }
+
+  def action = "/user/activate"
+
+  def plugin = PluginItem(ActivateUser.action, classOf[ActivateUser].getName, PluginType.action, None)
+}
+
+
+class UnActivatedUserAction extends BaseAction {
+  override def _run(params: Map[String, String]): String = {
+    import UnActivatedUserAction.Params
+
+    if (params.getOrElse(Params.ADMIN_TOKEN.name, "") != BasicDBService.adminToken) {
+      render(403, ActionHelper.msg("forbidden"))
+    }
+
+    val pageSize = params.getOrElse(Params.PAGE_OFFSET.name, "100").toInt
+    val pageOffset = params.getOrElse(Params.PAGE_OFFSET.name, "0").toInt
+    val users = ctx.run(ctx.query[User].
+      filter(_.activated == lift(UserConstant.IN_ACTIVATED)).
+      sortBy(_.createdTime)(Ord.desc).drop(pageOffset * pageSize).take(pageSize)
+    )
+    JSONTool.toJsonStr(users)
+  }
+
+  override def _help(): String = {
+    JSONTool.toJsonStr(FormParams.toForm(UnActivatedUserAction.Params).toList.reverse)
+  }
+}
+
+object UnActivatedUserAction {
+
+  object Params {
+    val ADMIN_TOKEN = Input("admin_token", "")
+    val PAGE_SIZE = Input("pageSize", "")
+    val PAGE_OFFSET = Input("pageOffset", "")
+  }
+
+  def action = "/user/unactivated/list"
+
+  def plugin = PluginItem(UnActivatedUserAction.action, classOf[UnActivatedUserAction].getName, PluginType.action, None)
+}
+
 
 
 

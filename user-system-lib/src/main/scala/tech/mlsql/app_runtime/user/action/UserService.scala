@@ -4,8 +4,8 @@ import tech.mlsql.app_runtime.db.quill_model.DictType
 import tech.mlsql.app_runtime.db.service.BasicDBService
 import tech.mlsql.app_runtime.user.PluginDB.ctx
 import tech.mlsql.app_runtime.user.PluginDB.ctx._
+import tech.mlsql.app_runtime.user.quill_model._
 import tech.mlsql.app_runtime.user.{Session, SystemConfig}
-import tech.mlsql.app_runtime.user.quill_model.{Resource, RoleResource, User, UserResource, UserRole}
 import tech.mlsql.common.utils.Md5
 import tech.mlsql.common.utils.serder.json.JSONTool
 import tech.mlsql.serviceframework.platform.action.RenderFunctions
@@ -110,12 +110,27 @@ object UserService extends RenderFunctions {
 
   def login(name: String, password: String) = {
     ctx.run(users().
-      filter(f => f.name == lift(name) && f.password == lift(Md5.md5Hash(password)))).
+      filter(f =>
+        f.name == lift(name) && f.password == lift(Md5.md5Hash(password))).
+      filter(_.activated == lift(UserConstant.ACTIVATED))
+    ).
       headOption
   }
 
   def findUser(name: String) = {
-    ctx.run(users().filter(_.name == lift(name))).headOption
+    ctx.run(users().filter(_.name == lift(name))).filter(_.activated == lift(UserConstant.ACTIVATED)).headOption
+  }
+
+  def findUserById(id: Int) = {
+    ctx.run(users().filter(_.id == lift(id))).filter(_.activated == lift(UserConstant.ACTIVATED)).headOption
+  }
+
+  def activateUser(name: String) = {
+    ctx.run(ctx.query[User].filter(_.name == lift(name)).update(_.activated -> lift(UserConstant.ACTIVATED)))
+  }
+
+  def activateUserById(id: Int) = {
+    ctx.run(ctx.query[User].filter(_.id == lift(id)).update(_.activated -> lift(UserConstant.ACTIVATED)))
   }
 
   def users() = {
