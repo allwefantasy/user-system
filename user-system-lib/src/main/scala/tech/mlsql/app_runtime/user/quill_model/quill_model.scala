@@ -8,6 +8,15 @@ case class User(id: Int,
                 createdTime: Long
                )
 
+case class UserLoginTracker(
+                             id: Int,
+                             userName: String,
+                             createdTime: Long,
+                             updatedTime: Long,
+                             fails: Int,
+                             lockTime: Long
+                           )
+
 case class Role(id: Int, var name: String, teamId: Int)
 
 case class UserRole(id: Int, var userId: Int, var roleId: Int)
