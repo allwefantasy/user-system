@@ -21,8 +21,8 @@ class UserRegAction extends BaseAction with ActionInfo {
       render(400, ActionHelper.msg("Email is required"))
     }
     val settings = ServiceFramwork.injector.getInstance(classOf[Settings])
-
-    val activate_by_default = if (settings.getAsBoolean("webplatform.user.activate_by_default", false)) {
+    val activateConfig = settings.getAsBoolean("webplatform.user.activate_by_default", false)
+    val activate_by_default = if (activateConfig) {
       UserConstant.ACTIVATED
     } else {
       UserConstant.IN_ACTIVATED
@@ -39,7 +39,8 @@ class UserRegAction extends BaseAction with ActionInfo {
             _.createdTime -> lift(System.currentTimeMillis()),
             _.email -> lift(email)
           ))
-          JSONTool.toJsonStr(List(Map("msg" -> s"Your account have been created. Please wait admin to activate it.")))
+          val v = if (activateConfig) "" else "Please wait admin to activate it."
+          JSONTool.toJsonStr(List(Map("msg" -> s"Your account have been created. ${v}")))
       }
     }
 
