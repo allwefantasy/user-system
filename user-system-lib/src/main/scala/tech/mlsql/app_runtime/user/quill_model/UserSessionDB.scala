@@ -1,8 +1,11 @@
 package tech.mlsql.app_runtime.user.quill_model
 
+import net.csdn.ServiceFramwork
+import net.csdn.common.settings.Settings
 import tech.mlsql.app_runtime.user.PluginDB.ctx
 import tech.mlsql.app_runtime.user.PluginDB.ctx._
 import tech.mlsql.app_runtime.user.{Session, UserSessionStorage}
+import tech.mlsql.common.utils.distribute.socket.server.JavaUtils
 import tech.mlsql.common.utils.serder.json.JSONTool
 
 
@@ -20,10 +23,18 @@ class UserSessionDB extends UserSessionStorage {
 
   }
 
+  def sessionTimeout: Long = {
+    val _settings = ServiceFramwork.injector.getInstance(classOf[Settings])
+    // 8d 8h 8m
+    val t = _settings.get("session.timeout", "8h")
+    JavaUtils.timeStringAsSec(t)
+  }
+
   override def get(name: String): Option[Session] = {
+
     val sess = ctx.run(userSession(name)).headOption
     if (sess.isDefined &&
-      (System.currentTimeMillis() - sess.get.createTime) > 8 * 60 * 60 * 1000) {
+      (System.currentTimeMillis() - sess.get.createTime) > sessionTimeout * 1000) {
       delete(sess.head.name)
       return None
     }
